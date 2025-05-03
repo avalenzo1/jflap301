@@ -4,6 +4,7 @@ Install Maven, then run this:
 ```
 mvn package
 ```
+This creates the file `target/JFLAP.jar`. For distribution it also creates the files `target/jflap-x.y.jar` and `target/JFLAP-x.y-source.jar`, where x.y is the version number. The sources file includes the source code.
 
 ## How to run it
 ```

@@ -163,7 +163,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <finalName>JFLAP_With_Source</finalName>
+                    <finalName>JFLAP-${project.version}</finalName>
                 </configuration>
             </plugin>
         </plugins>
