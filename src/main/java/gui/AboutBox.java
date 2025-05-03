@@ -1,7 +1,6 @@
 /*
  *  JFLAP - Formal Languages and Automata Package
  * 
- * 
  *  Susan H. Rodger
  *  Computer Science Department
  *  Duke University
@@ -14,129 +13,125 @@
  *
  */
 
+ package gui;
 
-
-
-
-package gui;
-
-import gui.ImageDisplayComponent;
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
-import java.awt.event.*;
-
-// import java.applet.Applet;
-// import java.applet.AudioClip;
-
-/**
- * The <TT>AboutBox</TT> is the about box for JFLAP.
- * 
- * @author Thomas Finley
- */
-
-public class AboutBox extends JWindow {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	/**
-	 * Instantiates a new <TT>AboutBox</TT>.
-	 * 
-	 * @param owner
-	 *            the owner of this about box
-	 */
-	public AboutBox(Frame owner) {
-		super(owner);
-		getContentPane().setLayout(new OverlayLayout(getContentPane()));
-		JPanel panel = new JPanel(new BorderLayout());
-		panel.setOpaque(false);
-		panel.setBorder(new EmptyBorder(3, 3, 3, 3));
-		JPanel fullPanel = new JPanel(new BorderLayout());
-		fullPanel.setOpaque(false);
-		panel.add(fullPanel, BorderLayout.SOUTH);
-		getContentPane().add(panel);
-		getContentPane().add(new ImageDisplayComponent(IMAGE));
-		addMouseListener(new BoxDismisser());
-	}
-
-	/**
-	 * Returns a label with the appropriate string.
-	 * 
-	 * @param string
-	 *            the string to display
-	 * @return a properly created JLabel visible on this frame
-	 */
-	private static JLabel getLabel(String string) {
-		JLabel label = new JLabel(string);
-		if (IMAGE != null)
-			label.setForeground(Color.black);
-		return label;
-	}
-
-	/**
-	 * Instantiates a new <TT>AboutBox</TT> with no specified owner.
-	 */
-	public AboutBox() {
-		this((Frame) null);
-	}
-
-	/**
-	 * Displays this about box, and plays the clip.
-	 */
-	public void displayBox() {
-		boolean toPlay = !isVisible();
-		pack();
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		Dimension boxSize = getPreferredSize();
-		setLocation((screenSize.width - boxSize.width) >> 1,
-				(screenSize.height - boxSize.height) >> 1);
-		toFront();
-		setVisible(true);
-	}
-
-	/**
-	 * Dismisses this about box, and stops the clip.
-	 */
-	public void dismissBox() {
-		dispose();
-		// CLIP.stop();
-	}
-
-	/**
-	 * This listens for clicks on the box. When it receives them, the box is
-	 * dismissed.
-	 */
-	private class BoxDismisser extends MouseAdapter {
-		public void mouseClicked(MouseEvent e) {
-			dismissBox();
-		}
-	}
-
-	/** A simple object to get the class off for resource reading. */
-	private static Object OBJECT = new Object();
-
-	/** The image to display in the about box. */
-	private static Image IMAGE = null;
-
-	/** The version string. */
-	public static final String VERSION = "7.1";
-
-	/**
-	 * Some simple test code for the about box.
-	 */
-	public static void main(String args[]) {
-		AboutBox box = new AboutBox();
-		box.displayBox();
-	}
-
-	static {
-		try {
-			IMAGE = Toolkit.getDefaultToolkit().getImage(
-					OBJECT.getClass().getResource("/MEDIA/about.png"));
-		} catch (NullPointerException e) {
-
-		}
-	}
-}
+ import javax.swing.*;
+ import javax.swing.border.EmptyBorder;
+ import java.awt.*;
+ import java.awt.event.*;
+ import java.io.IOException;
+ import java.util.Properties;
+ 
+ /**
+  * The <TT>AboutBox</TT> is the about box for JFLAP.
+  * 
+  * @author Thomas Finley
+  */
+ 
+ public class AboutBox extends JWindow {
+	 private static final long serialVersionUID = 1L;
+ 
+	 /**
+	  * Instantiates a new <TT>AboutBox</TT>.
+	  * 
+	  * @param owner the owner of this about box
+	  */
+	 public AboutBox(Frame owner) {
+		 super(owner);
+		 
+		 // Use a simple BorderLayout
+		 JPanel contentPanel = new JPanel(new BorderLayout(0, 10));
+		 contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		 contentPanel.setBackground(Color.WHITE);
+		 
+		 // Load the image as an ImageIcon (handles resource loading properly)
+		 ImageIcon icon = new ImageIcon(getClass().getResource("/MEDIA/about.png"));
+		 
+		 // Set up the image label
+		 JLabel imageLabel = new JLabel(icon);
+		 imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		 
+		 // Create a version label at the bottom
+		 JLabel versionLabel = new JLabel("JFLAP Version " + VERSION, SwingConstants.CENTER);
+		 versionLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+		 
+		 // Add components to the panel
+		 contentPanel.add(imageLabel, BorderLayout.CENTER);
+		 contentPanel.add(versionLabel, BorderLayout.SOUTH);
+		 
+		 // Set a proper fixed size that fits the entire image and text
+		 int imageWidth = icon.getIconWidth();
+		 int imageHeight = icon.getIconHeight();
+		 
+		 // Ensure minimum dimensions plus some padding
+		 int width = Math.max(imageWidth + 20, 480);
+		 int height = Math.max(imageHeight + 60, 350);
+		 
+		 contentPanel.setPreferredSize(new Dimension(width, height));
+		 
+		 // Set the content pane
+		 setContentPane(contentPanel);
+		 
+		 // Add click listener to dismiss
+		 addMouseListener(new MouseAdapter() {
+			 public void mouseClicked(MouseEvent e) {
+				 dispose();
+			 }
+		 });
+	 }
+ 
+	 /**
+	  * Instantiates a new <TT>AboutBox</TT> with no specified owner.
+	  */
+	 public AboutBox() {
+		 this((Frame) null);
+	 }
+ 
+	 /**
+	  * Displays this about box.
+	  */
+	 public void displayBox() {
+		 // Pack the window to fit the components
+		 pack();
+		 
+		 // Log the actual size after packing
+		 Dimension actualSize = getSize();
+		 System.out.println("About box size after pack: " + actualSize.width + "x" + actualSize.height);
+		 
+		 // Center on screen
+		 Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		 Dimension boxSize = getSize();
+		 setLocation((screenSize.width - boxSize.width) / 2,
+				 (screenSize.height - boxSize.height) / 2);
+		 
+		 // Show the window
+		 setVisible(true);
+		 toFront();
+	 }
+ 
+	 /**
+	  * The version string.
+	  */
+	 public static final String VERSION;
+ 
+	 /**
+	  * Some simple test code for the about box.
+	  */
+	 public static void main(String args[]) {
+		 AboutBox box = new AboutBox();
+		 box.displayBox();
+	 }
+ 
+	 static {
+		 // Load version from properties file
+		 Properties props = new Properties();
+		 String version = "7.2"; // Default fallback version
+		 try {
+			 props.load(AboutBox.class.getResourceAsStream("/version.properties"));
+			 version = props.getProperty("application.version", version);
+		 } catch (Exception e) {
+			 System.err.println("Failed to load version: " + e.getMessage());
+		 }
+		 VERSION = version;
+	 }
+ }
