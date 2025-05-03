@@ -11,13 +11,6 @@ This creates the file `target/JFLAP.jar`. For distribution it also creates the f
 java -jar target/JFLAP.jar
 ```
 
-## New in version 7.2
-- possible to use multiple "\~, \~, R" transitions in different states. 7.1 detected this always as non-deterministic, even if it was in different states
-- when using a "\~, \~, R" transition, this is sorted at the end now, so that something like "1, 1, R" has precedense, which is useful to keep scanning a tape by using a "\~, \~, R" transition loop back to the same state, and then when it finds a "1", it transitions to the next state
-- about dialog is fixed
-
-There was a bug that an URL was not found after converting it to the Maven build system, probably related to the integrated help system, but looks like this never worked anyway in 7.1, so I just commented the warning message for now.
-
 # Original readme
 Thanks for your interest in JFLAP!
 
