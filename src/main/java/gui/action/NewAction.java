@@ -32,6 +32,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.Serializable;
+import java.util.Properties;
+
 import javax.swing.*;
 
 import automata.mealy.MealyMachine;
@@ -119,15 +121,27 @@ public class NewAction extends RestrictedAction {
 		 * Instantiates a <CODE>NewDialog</CODE> instance.
 		 */
 		public NewDialog() {
-			// super((java.awt.Frame)null, "New Document");
-			super("JFLAP 7.1");
+			super("JFLAP"); // Call super with temporary title
+			
+			// Load version from properties
+			Properties props = new Properties();
+			try {
+				props.load(NewDialog.class.getResourceAsStream("/version.properties"));
+				String version = props.getProperty("application.version");
+				
+				// Set the title with the loaded version
+				setTitle("JFLAP " + version);
+			} catch (Exception e) {
+				System.err.println("Failed to load version: " + e.getMessage());
+			}
+			
 			getContentPane().setLayout(new GridLayout(0, 1));
 			initMenu();
 			initComponents();
 			setResizable(false);
 			this.pack();
 			this.setLocation(50, 50);
-
+		
 			this.addWindowListener(new WindowAdapter() {
 				public void windowClosing(WindowEvent event) {
 					if (Universe.numberOfFrames() > 0) {
