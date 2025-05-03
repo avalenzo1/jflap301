@@ -1,3 +1,16 @@
+# JFLAP
+## How to build it
+Install Maven, then run this:
+```
+mvn package
+```
+
+## How to run it
+```
+java -jar target/JFLAP.jar
+```
+
+# Original readme
 Thanks for your interest in JFLAP!
 
 We are distributing both the JFLAP source and binary under the JFLAP 7.1 license, available in the file LICENSE.
