@@ -189,6 +189,9 @@ public class WebFrame extends JFrame {
 	 *            the name of the url
 	 */
 	private void setDisplay(String url) {
+		if (url.length() == 0) {
+			return;
+		}
 		try {
 			myBrowserDisplay.setPage(url);
 		} catch (IOException e) {
