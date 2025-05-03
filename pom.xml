@@ -53,24 +53,27 @@
         </dependency>
     </dependencies>
     <build>
-        <!-- Configure resource filtering only for version.properties -->
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>false</filtering>
-                <excludes>
-                    <exclude>version.properties</exclude>
-                </excludes>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-                <includes>
-                    <include>version.properties</include>
-                </includes>
-            </resource>
-        </resources>
         <plugins>
+            <!-- Generate version.properties file -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <echo file="${project.build.outputDirectory}/version.properties">application.version=${project.version}</echo>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -80,6 +83,7 @@
                     <target>${maven.compiler.target}</target>
                 </configuration>
             </plugin>
+
             <!-- Configure the regular JAR -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -95,6 +99,7 @@
                     </archive>
                 </configuration>
             </plugin>
+
             <!-- Create executable all-in-one JAR with the Maven Shade Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -131,6 +136,7 @@
                     </execution>
                 </executions>
             </plugin>
+
             <!-- Copy dependencies to lib directory -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -149,6 +155,7 @@
                     </execution>
                 </executions>
             </plugin>
+
             <!-- Create JAR with source code included -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
