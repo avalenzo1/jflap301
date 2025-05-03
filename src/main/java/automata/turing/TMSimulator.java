@@ -260,7 +260,7 @@ public class TMSimulator extends AutomatonSimulator {
         boolean success = false;
 outer:  while (true){
 
-            //sort the ones with the ! symbol to be the later ones. If there are multiple !, then the choice is arbitrary.
+            // sort the ones with the ! and ~ symbol to be the later ones. If there are multiple !, then the choice is arbitrary.
             Arrays.sort(trans, new Comparator<Transition>(){
                     public int compare (Transition a, Transition b){ //variables are only allowed with SINGLE TAPE, and same with NOT
                         
@@ -269,9 +269,17 @@ outer:  while (true){
                         
                         char fa = tma.getRead(0).charAt(0);
                         char fb = tmb.getRead(0).charAt(0);
-                        return (fa == '!')?(fb == '!' ? 0 : 1) : (fb == '!' ? 1 : 0);
+                        boolean fa2 = fa == '!' || fa == '~';
+                        boolean fb2 = fb == '!' || fb == '~';
+                        if (fa2 && !fb2) {
+                            return 1;
+                        } else if (!fa2 && fb2) {
+                            return -1;
+                        } else {
+                            return 0;
+                        }
                     }
-                    });
+            });
 
             //go through transitions at current level
             for (int i = 0; i < trans.length; i++){

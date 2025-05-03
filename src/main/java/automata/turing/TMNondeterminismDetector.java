@@ -126,7 +126,7 @@ public class TMNondeterminismDetector extends NondeterminismDetector {
 				}
 			}
 		}
-		return true;
+		return false;
 	}
 }
 	
