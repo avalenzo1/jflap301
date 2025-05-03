@@ -6,7 +6,7 @@
 
     <groupId>edu.duke</groupId>
     <artifactId>jflap</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>7.1</version>
     <packaging>jar</packaging>
 
     <name>JFLAP</name>
@@ -14,35 +14,40 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
         <main.class>gui.Main</main.class>
         <batik.version>1.6-1</batik.version>
     </properties>
 
     <dependencies>
-        <!-- Apache Batik SVG Libraries (older version that matches original code) -->
+        <!-- Apache Batik SVG Libraries -->
         <dependency>
-            <groupId>batik</groupId>
+            <groupId>org.apache.xmlgraphics</groupId>
             <artifactId>batik-svggen</artifactId>
-            <version>${batik.version}</version>
+            <version>1.14</version>
         </dependency>
         <dependency>
-            <groupId>batik</groupId>
+            <groupId>org.apache.xmlgraphics</groupId>
             <artifactId>batik-dom</artifactId>
-            <version>${batik.version}</version>
+            <version>1.14</version>
         </dependency>
         <dependency>
-            <groupId>batik</groupId>
+            <groupId>org.apache.xmlgraphics</groupId>
             <artifactId>batik-swing</artifactId>
-            <version>${batik.version}</version>
+            <version>1.14</version>
         </dependency>
         <dependency>
-            <groupId>batik</groupId>
+            <groupId>org.apache.xmlgraphics</groupId>
             <artifactId>batik-svg-dom</artifactId>
-            <version>${batik.version}</version>
+            <version>1.14</version>
         </dependency>
-
+        <!-- Add XML APIs explicitly -->
+        <dependency>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+            <version>1.4.01</version>
+        </dependency>
         <!-- JUnit for testing -->
         <dependency>
             <groupId>junit</groupId>
@@ -61,23 +66,10 @@
                 <configuration>
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
-                    <!-- Disable or suppress generic type safety warnings -->
-                    <compilerArgs>
-                        <arg>-Xlint:none</arg>
-                        <arg>-Xmaxwarns</arg>
-                        <arg>0</arg>
-                        <arg>-Xmaxerrs</arg>
-                        <arg>0</arg>
-                    </compilerArgs>
-                    <!-- Allow raw types without errors -->
-                    <forceJavacCompilerUse>true</forceJavacCompilerUse>
-                    <fork>true</fork>
-                    <failOnError>false</failOnError>
-                    <showWarnings>false</showWarnings>
-                    <showDeprecation>false</showDeprecation>
                 </configuration>
             </plugin>
 
+            <!-- Configure the regular JAR -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -86,13 +78,67 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
                             <mainClass>${main.class}</mainClass>
                         </manifest>
-                        <manifestEntries>
-                            <Built-By>Maven</Built-By>
-                        </manifestEntries>
                     </archive>
                 </configuration>
+            </plugin>
+
+            <!-- Create executable all-in-one JAR with the Maven Shade Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <shadedArtifactAttached>true</shadedArtifactAttached>
+                            <shadedClassifierName>all</shadedClassifierName>
+                            <finalName>JFLAP</finalName>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>${main.class}</mainClass>
+                                </transformer>
+                            </transformers>
+                            <!-- Exclude signing info from dependencies -->
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Copy dependencies to lib directory -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                            <includeScope>runtime</includeScope>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
             <!-- Create JAR with source code included -->
@@ -112,34 +158,6 @@
                     <finalName>JFLAP_With_Source</finalName>
                 </configuration>
             </plugin>
-
-            <!-- Create executable JAR with dependencies -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.3.0</version>
-                <configuration>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                    <archive>
-                        <manifest>
-                            <mainClass>${main.class}</mainClass>
-                        </manifest>
-                    </archive>
-                    <finalName>JFLAP_Thin</finalName>
-                    <appendAssemblyId>false</appendAssemblyId>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>make-assembly</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 
@@ -155,6 +173,9 @@
                         <version>3.2.2</version>
                         <configuration>
                             <finalName>JFLAP</finalName>
+                            <excludes>
+                                <exclude>**/*.java</exclude>
+                            </excludes>
                         </configuration>
                     </plugin>
                 </plugins>

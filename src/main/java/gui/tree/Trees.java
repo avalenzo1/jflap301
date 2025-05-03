@@ -50,9 +50,10 @@ public class Trees {
 		TreeNode[] children = new TreeNode[node.getChildCount()];
 		if (!node.isLeaf()) {
 			int i = 0;
-			Enumeration<TreeNode> enumer = node.children();
+			@SuppressWarnings("unchecked")
+			Enumeration<TreeNode> enumer = (Enumeration<TreeNode>)node.children();
 			while (i < children.length)
-				children[i++] = (TreeNode) enumer.nextElement();
+				children[i++] = enumer.nextElement();
 		}
 		return children;
 	}
