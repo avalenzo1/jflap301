@@ -3,15 +3,12 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>edu.duke</groupId>
     <artifactId>jflap</artifactId>
-    <version>7.1</version>
+    <version>7.2</version>
     <packaging>jar</packaging>
-
     <name>JFLAP</name>
     <description>Java Formal Languages and Automata Package</description>
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -19,7 +16,6 @@
         <main.class>gui.Main</main.class>
         <batik.version>1.6-1</batik.version>
     </properties>
-
     <dependencies>
         <!-- Apache Batik SVG Libraries -->
         <dependency>
@@ -56,8 +52,24 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
     <build>
+        <!-- Configure resource filtering only for version.properties -->
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <excludes>
+                    <exclude>version.properties</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>version.properties</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -68,7 +80,6 @@
                     <target>${maven.compiler.target}</target>
                 </configuration>
             </plugin>
-
             <!-- Configure the regular JAR -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -84,7 +95,6 @@
                     </archive>
                 </configuration>
             </plugin>
-
             <!-- Create executable all-in-one JAR with the Maven Shade Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -121,7 +131,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <!-- Copy dependencies to lib directory -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -140,7 +149,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <!-- Create JAR with source code included -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -160,7 +168,6 @@
             </plugin>
         </plugins>
     </build>
-
     <profiles>
         <!-- Profile for creating the JFLAP.jar without source -->
         <profile>
@@ -181,7 +188,6 @@
                 </plugins>
             </build>
         </profile>
-
         <!-- Profile for creating SVG jar -->
         <profile>
             <id>svg-jar</id>
