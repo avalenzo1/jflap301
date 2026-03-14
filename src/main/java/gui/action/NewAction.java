@@ -1,7 +1,7 @@
 /*
  *  JFLAP - Formal Languages and Automata Package
- * 
- * 
+ *
+ *
  *  Susan H. Rodger
  *  Computer Science Department
  *  Duke University
@@ -31,9 +31,13 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.Properties;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import automata.mealy.MealyMachine;
@@ -43,13 +47,13 @@ import automata.mealy.MooreMachine;
  * The <CODE>NewAction</CODE> handles when the user decides to create some new
  * environment, that is, some sort of new automaton, or grammar, or regular
  * expression, or some other such editable object.
- * 
+ *
  * @author Thomas Finley
  */
 
 public class NewAction extends RestrictedAction {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
@@ -64,22 +68,22 @@ public class NewAction extends RestrictedAction {
 
 	/**
 	 * Shows the new machine dialog box.
-	 * 
+	 *
 	 * @param event
 	 *            the action event
 	 */
 	public void actionPerformed(ActionEvent event) {
 		showNew();
 	}
-	
+
 	/**
 	 * Dispose of environment dialog
 	 * by Moti Ben-Ari
 	 */
-    public static void closeNew() {
-        DIALOG.dispose();
-        DIALOG = null;
-    }
+	public static void closeNew() {
+		DIALOG.dispose();
+		DIALOG = null;
+	}
 
 	/**
 	 * Shows the new environment dialog.
@@ -101,7 +105,7 @@ public class NewAction extends RestrictedAction {
 	/**
 	 * Called once a type of editable object is choosen. The editable object is
 	 * passed in, the dialog is hidden, and the window is created.
-	 * 
+	 *
 	 * @param object
 	 *            the object that we are to edit
 	 */
@@ -113,7 +117,7 @@ public class NewAction extends RestrictedAction {
 	/** The dialog box that allows one to create new environments. */
 	private static class NewDialog extends JFrame {
 		/**
-		 * 
+		 *
 		 */
 		private static final long serialVersionUID = 1L;
 
@@ -122,26 +126,39 @@ public class NewAction extends RestrictedAction {
 		 */
 		public NewDialog() {
 			super("JFLAP"); // Call super with temporary title
-			
+
 			// Load version from properties
 			Properties props = new Properties();
 			try {
 				props.load(NewDialog.class.getResourceAsStream("/version.properties"));
 				String version = props.getProperty("application.version");
-				
+
 				// Set the title with the loaded version
 				setTitle("JFLAP " + version);
 			} catch (Exception e) {
 				System.err.println("Failed to load version: " + e.getMessage());
 			}
-			
+
 			getContentPane().setLayout(new GridLayout(0, 1));
 			initMenu();
 			initComponents();
 			setResizable(false);
+
+			// Change icon to JFLAP Logo
+			if (Taskbar.isTaskbarSupported()) {
+				try {
+					Taskbar taskbar = Taskbar.getTaskbar();
+					// Load image from resources or file system
+					BufferedImage image = ImageIO.read(Objects.requireNonNull(getClass().getResource("/MEDIA/icon.png")));
+					taskbar.setIconImage(image);
+				} catch (UnsupportedOperationException | IOException e) {
+					System.err.println("Error setting Dock icon: " + e.getMessage());
+				}
+			}
+
 			this.pack();
 			this.setLocation(50, 50);
-		
+
 			this.addWindowListener(new WindowAdapter() {
 				public void windowClosing(WindowEvent event) {
 					if (Universe.numberOfFrames() > 0) {
@@ -168,33 +185,33 @@ public class NewAction extends RestrictedAction {
 			} catch (SecurityException e) {
 				// Well, can't exit anyway.
 			}
-            menuBar.add(menu);
+			menuBar.add(menu);
 			menu = new JMenu("Help");
 			MenuBarCreator.addItem(menu, new NewHelpAction());
 			MenuBarCreator.addItem(menu, new AboutAction());
 			menuBar.add(menu);
-            menu = new JMenu("Batch");
-            MenuBarCreator.addItem(menu, new TestAction());
-            menuBar.add(menu);
-            menu = new JMenu("Preferences");
+			menu = new JMenu("Batch");
+			MenuBarCreator.addItem(menu, new TestAction());
+			menuBar.add(menu);
+			menu = new JMenu("Preferences");
 
-            JMenu tmPrefMenu = new JMenu("Turing Machine Preferences");
-            tmPrefMenu.add(Universe.curProfile.getTuringFinalCheckBox());
-            tmPrefMenu.add(Universe.curProfile.getAcceptByFinalStateCheckBox());
-            tmPrefMenu.add(Universe.curProfile.getAcceptByHaltingCheckBox());
-            tmPrefMenu.add(Universe.curProfile.getAllowStayCheckBox());
+			JMenu tmPrefMenu = new JMenu("Turing Machine Preferences");
+			tmPrefMenu.add(Universe.curProfile.getTuringFinalCheckBox());
+			tmPrefMenu.add(Universe.curProfile.getAcceptByFinalStateCheckBox());
+			tmPrefMenu.add(Universe.curProfile.getAcceptByHaltingCheckBox());
+			tmPrefMenu.add(Universe.curProfile.getAllowStayCheckBox());
 
-            //MenuBarCreator.addItem(menu, new ColorChooserAction());
-            MenuBarCreator.addItem(menu, new EmptyStringCharacterAction());
+			//MenuBarCreator.addItem(menu, new ColorChooserAction());
+			MenuBarCreator.addItem(menu, new EmptyStringCharacterAction());
 //            menu.add(Universe.curProfile.getTuringFinalCheckBox());
-            menu.add(new SetUndoAmountAction());
-            menu.add(new ColorChooserAction());
+			menu.add(new SetUndoAmountAction());
+			menu.add(new ColorChooserAction());
 
-            menu.add(tmPrefMenu);
-            
-            
+			menu.add(tmPrefMenu);
 
-            menuBar.add(menu);
+
+
+			menuBar.add(menu);
 			setJMenuBar(menuBar);
 		}
 
@@ -209,34 +226,34 @@ public class NewAction extends RestrictedAction {
 				}
 			});
 			getContentPane().add(button);
-            
-            button = new JButton("Mealy Machine");
-            button.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        createWindow(new MealyMachine());
-                    }
-                });
-            getContentPane().add(button);
-            button = new JButton("Moore Machine");
-            button.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        createWindow(new MooreMachine());
-                    }
-                });
-            getContentPane().add(button);
+
+			button = new JButton("Mealy Machine");
+			button.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					createWindow(new MealyMachine());
+				}
+			});
+			getContentPane().add(button);
+			button = new JButton("Moore Machine");
+			button.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					createWindow(new MooreMachine());
+				}
+			});
+			getContentPane().add(button);
 
 			button = new JButton("Pushdown Automaton");
 			button.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					Object[] possibleValues = {"Multiple Character Input", "Single Character Input"};
 					Object selectedValue = JOptionPane.showInputDialog(null,
-				            "Type of PDA Input", "Input",
-				            JOptionPane.INFORMATION_MESSAGE, null,
-				            possibleValues, possibleValues[0]);
+							"Type of PDA Input", "Input",
+							JOptionPane.INFORMATION_MESSAGE, null,
+							possibleValues, possibleValues[0]);
 					if (selectedValue==possibleValues[0]){
 						createWindow(new automata.pda.PushdownAutomaton());
 					}else if(selectedValue==possibleValues[1]){
@@ -274,7 +291,7 @@ public class NewAction extends RestrictedAction {
 				private Integer[] INTS = null;
 			});
 			getContentPane().add(button);
-			
+
 			button = new JButton("Turing Machine With Building Blocks");
 			button.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
@@ -306,26 +323,26 @@ public class NewAction extends RestrictedAction {
 				}
 			});
 			getContentPane().add(button);
-            
-            button = new JButton("Regular Pumping Lemma");
-            button.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        createWindow(new RegPumpingLemmaChooser());
-                    }
-                });
-            getContentPane().add(button);
-            
-            button = new JButton("Context-Free Pumping Lemma");
-            button.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        createWindow(new CFPumpingLemmaChooser());
-                    }
-                });
-            getContentPane().add(button);
+
+			button = new JButton("Regular Pumping Lemma");
+			button.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					createWindow(new RegPumpingLemmaChooser());
+				}
+			});
+			getContentPane().add(button);
+
+			button = new JButton("Context-Free Pumping Lemma");
+			button.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					createWindow(new CFPumpingLemmaChooser());
+				}
+			});
+			getContentPane().add(button);
 		}
 	}
 
