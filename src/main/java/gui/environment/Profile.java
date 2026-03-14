@@ -52,7 +52,7 @@ public class Profile {
 	public String epsilon = "\u03B5";
 	public String lambdaText = "u03BB";
 	public String epsilonText = "u03B5";
-	private String emptyString = lambda;
+	private String emptyString = epsilon;
 	public String Color = "Original";
 	public int undo_num = 50;
 	
@@ -112,7 +112,7 @@ public class Profile {
     }
 	
 	public Profile(){
-		emptyString = lambda;
+		emptyString = epsilon;
 		transTuringFinal = false;
 		transTuringFinalCheckBox = new JCheckBoxMenuItem("Enable Transitions From Turing Machine Final States");
         transTuringFinalCheckBox.setSelected(transTuringFinal);
@@ -176,6 +176,21 @@ public class Profile {
 	 */
 	public String getEmptyString(){
 		return emptyString;
+	}
+
+	/**
+	 * Returns the empty string in plain English.
+	 *
+	 * @return the empty string in plain English (i.e., Lambda or Epsilon)
+	 */
+	public String getEmptyStringLabel() {
+		String empty = "Lambda";
+		if(Universe.curProfile.getEmptyString().equals(Profile.LAMBDA))
+			empty = "Lambda";
+		else if(Universe.curProfile.getEmptyString().equals(Profile.EPSILON))
+			empty = "Epsilon";
+
+		return empty;
 	}
 	
 	/**
@@ -343,4 +358,6 @@ public class Profile {
 			element.appendChild(document.createTextNode(text));
 		return element;
 	}
+
+
 }

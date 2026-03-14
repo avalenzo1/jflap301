@@ -20,6 +20,7 @@
 
 package gui.action;
 
+import automata.*;
 import grammar.Grammar;
 import grammar.parse.BruteParser;
 import grammar.parse.BruteParserEvent;
@@ -91,16 +92,10 @@ import javax.swing.tree.TreeNode;
 
 //import com.sun.org.apache.xalan.internal.xsltc.compiler.Parser;
 
-import automata.Automaton;
-import automata.AutomatonSimulator;
-import automata.Configuration;
-import automata.NondeterminismDetector;
-import automata.NondeterminismDetectorFactory;
-import automata.SimulatorFactory;
-import automata.State;
 import automata.turing.TMSimulator;
 import automata.turing.NDTMSimulator;
 import automata.turing.TuringMachine;
+import org.testng.annotations.Test;
 
 /**
  * This is the action used for the simulation of multiple inputs on an automaton
@@ -233,7 +228,7 @@ public class MultipleSimulateAction extends NoInteractionSimulateAction {
 		// In this regular multiple simulate pane, we don't care about
 		// the outputs, so get rid of them.
 		TableColumnModel tcmodel = table.getColumnModel();
-		
+
 		inputCount += model.getInputCount();
 		for (int i = model.getInputCount(); i > 0; i--) {
 			tcmodel.removeColumn(tcmodel.getColumn(inputCount));
@@ -244,13 +239,14 @@ public class MultipleSimulateAction extends NoInteractionSimulateAction {
             ArrayList<String> strings = this.getEnvironment().myTestStrings;
             int offset = strings.size();
             int row = 0;
+
             for(int m = 0; m < autos.size(); m++){      
                 for(int k = 0; k < strings.size(); k++){
                     row = k+offset*m;
                     Object currentObj = autos.get(m);
                     if(currentObj instanceof Automaton){
                     	model.setValueAt(((Automaton)currentObj).getFileName(), row, 0); 
-                    	 model.setValueAt((String)strings.get(k), row, 1);                    	
+                    	 model.setValueAt((String)strings.get(k), row, 1);
                     }
                     else if(currentObj instanceof Grammar){
                     	model.setValueAt(((Grammar)currentObj).getFileName(), row, 0); 
@@ -324,13 +320,15 @@ public class MultipleSimulateAction extends NoInteractionSimulateAction {
 			panel.add(scrollPane, BorderLayout.CENTER);
 			panel.add(new TableTextSizeSlider(table, JSlider.HORIZONTAL), BorderLayout.NORTH);
 			//put in some glue to push the buttons to the right
-			bar.add(Box.createHorizontalGlue());			
+			bar.add(Box.createHorizontalGlue());
+
+			addTestCases();
 		} else {
 			panel.add(new JScrollPane(table), BorderLayout.CENTER);
 			panel.add(bar, BorderLayout.SOUTH);
 			panel.add(new TableTextSizeSlider(table, JSlider.HORIZONTAL), BorderLayout.NORTH);
 		}
-		
+
 		//Load inputs
 		bar.add(new AbstractAction("Load Inputs"){
 
@@ -513,16 +511,12 @@ public class MultipleSimulateAction extends NoInteractionSimulateAction {
 		
         /*
          * So that it will show up as Lambda or Epsilon, depending on the
-         * profile. Sorry about the cheap hack. 
+         * profile. Sorry about the cheap hack. <-- ts was not the wind twin 🫩💔🥀
          * 
          * Jinghui Lim
          */
-        String empty = "Lambda";
-        if(Universe.curProfile.getEmptyString().equals(Profile.LAMBDA))
-            empty = "Lambda";
-        else if(Universe.curProfile.getEmptyString().equals(Profile.EPSILON))
-            empty = "Epsilon";
-		bar.add(new AbstractAction("Enter " + empty/*"Enter Lambda"*/) {
+
+		bar.add(new AbstractAction("Enter " + Universe.curProfile.getEmptyStringLabel()) {
 			/**
 			 * 
 			 */
@@ -919,7 +913,21 @@ public class MultipleSimulateAction extends NoInteractionSimulateAction {
         }
 		
 	}
-	
+
+	private void addTestCases() {
+		ArrayList<TestCase> testCases = ((Automaton) this.getEnvironment().getObject()).tests;
+		InputTableModel model = (InputTableModel) table.getModel();
+		int last=model.getRowCount()-1;
+
+		for (int i = 0; i < testCases.size(); ++i)
+		{
+			TestCase testCase = testCases.get(i);
+			model.setValueAt(testCase.input, last, 0);
+//			model.setValueAt(testCase.expected, last, 1);
+			last++;
+		}
+	}
+
 	private int getMachineIndexBySelectedRow(JTable table){
 		InputTableModel model = (InputTableModel) table.getModel();
         int row = table.getSelectedRow();

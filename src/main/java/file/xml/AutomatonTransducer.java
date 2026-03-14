@@ -438,7 +438,7 @@ public abstract class AutomatonTransducer extends AbstractTransducer {
 
 				System.out.println(string + expected);
 
-				root.tests.add(new TestCase(string, Objects.equals(expected, "accept")));
+				root.tests.add(new TestCase(string, expected));
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
 			}
