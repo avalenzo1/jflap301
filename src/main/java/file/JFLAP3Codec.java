@@ -21,6 +21,7 @@
 package file;
 
 import automata.*;
+import automata.fsa.FiniteStateAutomaton;
 import grammar.Grammar;
 import grammar.Production;
 import grammar.UnboundGrammar;
@@ -166,7 +167,7 @@ public class JFLAP3Codec extends Codec {
 	private automata.fsa.FiniteStateAutomaton readFA(BufferedReader reader)
 			throws IOException {
 		automata.fsa.FiniteStateAutomaton fa = new automata.fsa.FiniteStateAutomaton();
-		// Generic states.
+		// Generic states
 		State[] states = readStateCreate(fa, reader);
 		String[][][] groups = readTransitionGroups(2, 1, states.length, reader);
 		for (int s = 0; s < groups.length; s++) {
@@ -183,6 +184,7 @@ public class JFLAP3Codec extends Codec {
 		readStateMove(states, reader);
 		return fa;
 	}
+
 
 	/**
 	 * Reads the lines in the reader as a pushdown automaton.

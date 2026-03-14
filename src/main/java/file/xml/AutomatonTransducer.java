@@ -21,21 +21,14 @@
 package file.xml;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+import automata.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import automata.Automaton;
-import automata.Note;
-import automata.State;
-import automata.Transition;
 import automata.graph.AutomatonGraph;
 import automata.graph.LayoutAlgorithm;
 import automata.graph.layout.GEMLayoutAlgorithm;
@@ -412,6 +405,7 @@ public abstract class AutomatonTransducer extends AbstractTransducer {
 	}
 
 	public java.io.Serializable readAutomaton(Node parent, Document document) {
+		System.out.println("HELLO????sdgjksbndiognsdoig");
 		Set<Object> locatedStates = new java.util.HashSet<>();
 		Automaton root = createEmptyAutomaton(document);
         if(parent == null) return root;
@@ -419,12 +413,36 @@ public abstract class AutomatonTransducer extends AbstractTransducer {
 		// Read the states and transitions.
 		readTransitions(parent, root, readStates(parent, root, locatedStates,
 				document));
+
+		// Read testcases for Automaton
+		readTests(parent, root, document);
+
 		//read the notes
 		readnotes(parent, root, document);
 		// Do the layout if necessary.
 		performLayout(root, locatedStates);
 		automatonMap.put(parent.getNodeName(), root);
 		return root;
+	}
+
+	private void readTests(Node parent, Automaton root, Document document) {
+		NodeList nodeList = document.getElementsByTagName("testcase");
+
+		for (int i = 0; i < nodeList.getLength(); ++i)
+		{
+			try {
+				Element testCaseNode = (Element) nodeList.item(i);
+
+				String string = testCaseNode.getElementsByTagName("string").item(0).getTextContent();
+				String expected = testCaseNode.getElementsByTagName("expect").item(0).getTextContent();
+
+				System.out.println(string + expected);
+
+				root.tests.add(new TestCase(string, Objects.equals(expected, "accept")));
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+			}
+		}
 	}
 
 	private void readnotes(Node parent, Automaton root, Document document) {

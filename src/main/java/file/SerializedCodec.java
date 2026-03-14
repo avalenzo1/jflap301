@@ -64,6 +64,7 @@ public class SerializedCodec extends Codec {
 			ObjectInputStream stream = new ObjectInputStream(
 					new BufferedInputStream(new FileInputStream(file)));
 			object = (Serializable) stream.readObject();
+
 			stream.close();
 		} catch (IOException e) {
 			throw new ParseException("Could not open file to read!");

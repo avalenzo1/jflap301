@@ -216,6 +216,7 @@ public class MultipleSimulateAction extends NoInteractionSimulateAction {
 	 */
 	protected JTableExtender initializeTable(Object obj) {
 //		System.out.println("In regular multiple initialize");
+		System.out.println(obj);
 		boolean multiple = false;
 		int inputCount = 0;
         if(this.getEnvironment().myObjects!=null){
@@ -265,6 +266,9 @@ public class MultipleSimulateAction extends NoInteractionSimulateAction {
 		// Set up the last graphical parameters.
 		table.setShowGrid(true);
 		table.setGridColor(Color.lightGray);
+
+
+
 		return table;
 	}
 	

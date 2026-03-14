@@ -174,6 +174,8 @@ public class OpenAction extends RestrictedAction {
 		for (int i = 0; i < codecs.length; i++) {
 			try {
 				Serializable object = codecs[i].decode(file, null);
+
+				System.out.println(object);
 				System.out.println(openOrRead);
 				if (openOrRead && !(object instanceof TuringMachineBuildingBlocks)) {
 					dontOpen = true;

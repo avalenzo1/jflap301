@@ -83,6 +83,7 @@ public class Automaton implements Serializable, Cloneable {
 	 * has no states and no transitions.
 	 */
 	public Automaton() {
+		tests = new ArrayList<TestCase>();
 		states = new HashSet<State>();
 		transitions = new HashSet<>();
 		finalStates = new HashSet<State>();
@@ -935,6 +936,9 @@ public class Automaton implements Serializable, Cloneable {
     private String fileName = "";   // Jinghui bug fixing.
 
 	private EnvironmentFrame myEnvFrame = null;
+
+	/** The collection of states in this automaton. */
+	public ArrayList<TestCase> tests;
 
 	/** The collection of states in this automaton. */
 	public Set<State> states;
