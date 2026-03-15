@@ -21,81 +21,39 @@
 package gui.action;
 
 import automata.*;
+import automata.mealy.MealyConfiguration;
+import automata.mealy.MealyMachine;
+import automata.turing.NDTMSimulator;
+import automata.turing.TMSimulator;
+import automata.turing.TuringMachine;
 import grammar.Grammar;
-import grammar.parse.BruteParser;
-import grammar.parse.BruteParserEvent;
-import grammar.parse.BruteParserListener;
-import automata.fsa.FSAStepByStateSimulator;
-import automata.mealy.*;
 import gui.JTableExtender;
 import gui.SplitPaneFactory;
 import gui.TableTextSizeSlider;
-import gui.action.MultipleSimulateAction.MultiplePane;
 import gui.editor.ArrowDisplayOnlyTool;
 import gui.editor.EditorPane;
-import gui.environment.AutomatonEnvironment;
 import gui.environment.Environment;
-import gui.environment.EnvironmentFactory;
 import gui.environment.EnvironmentFrame;
-import gui.environment.FrameFactory;
 import gui.environment.GrammarEnvironment;
-import gui.environment.Profile;
 import gui.environment.Universe;
-import gui.environment.EnvironmentFactory.EditorPermanentTag;
 import gui.environment.tag.CriticalTag;
-import gui.environment.tag.Tag;
 import gui.grammar.GrammarInputPane;
 import gui.grammar.parse.BruteParsePane;
-import gui.grammar.parse.UnrestrictedTreePanel;
 import gui.sim.TraceWindow;
-import gui.sim.multiple.InputTableModel;
+import gui.sim.multiple.TestInputTableModel;
 import gui.viewer.AutomatonPane;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Point;
+import javax.swing.*;
+import javax.swing.table.TableColumnModel;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.Box;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JSlider;
-import javax.swing.JSplitPane;
-import javax.swing.JTable;
-import javax.swing.JToolBar;
-import javax.swing.KeyStroke;
-import javax.swing.ScrollPaneLayout;
-import javax.swing.Timer;
-import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
-import javax.swing.tree.TreeNode;
-
-//import com.sun.org.apache.xalan.internal.xsltc.compiler.Parser;
-
-import automata.turing.TMSimulator;
-import automata.turing.NDTMSimulator;
-import automata.turing.TuringMachine;
-import org.testng.annotations.Test;
 
 /**
  * This is the action used for the simulation of multiple inputs on an automaton
@@ -105,32 +63,32 @@ import org.testng.annotations.Test;
  * @modified by Kyung Min (Jason) Lee
  */
 
-public class MultipleSimulateAction extends NoInteractionSimulateAction {
+public class MultipleSimulateActionTests extends MultipleSimulateAction {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Instantiates a new <CODE>MultipleSimulateAction</CODE>.
-	 * 
+	 *
 	 * @param automaton
 	 *            the automaton that input will be simulated on
 	 * @param environment
 	 *            the environment object that we shall add our simulator pane to
 	 */
-	public MultipleSimulateAction(Automaton automaton, Environment environment) {
+	public MultipleSimulateActionTests(Automaton automaton, Environment environment) {
 		super(automaton, environment);
-		putValue(NAME, "Multiple Run");
-        putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_M,
-                MAIN_MENU_MASK));
+		putValue(NAME, "Run Testcases");
+		putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_M,
+				MAIN_MENU_MASK + InputEvent.SHIFT_MASK));
 	}
 
-	public MultipleSimulateAction(Grammar gram, Environment environment) {
+	public MultipleSimulateActionTests(Grammar gram, Environment environment) {
 		super(gram, environment);
-		putValue(NAME, "Multiple Run");
+		putValue(NAME, "Run Testcases");
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_M,
-                MAIN_MENU_MASK));
+				MAIN_MENU_MASK + InputEvent.SHIFT_MASK));
 	}
 	
 	/**
@@ -140,7 +98,7 @@ public class MultipleSimulateAction extends NoInteractionSimulateAction {
 	 * @return in this base class, returns "Multiple Inputs"
 	 */
 	public String getComponentTitle() {
-		return "Multiple Run";
+		return "Run Testcases";
 	}
 
 	/**
@@ -207,7 +165,7 @@ public class MultipleSimulateAction extends NoInteractionSimulateAction {
 	 * @param obj
 	 *            the automaton to provide the multiple input table for
 	 * @return a table object for this automaton
-	 * @see gui.sim.multiple.InputTableModel
+	 * @see TestInputTableModel
 	 */
 	protected JTableExtender initializeTable(Object obj) {
 //		System.out.println("In regular multiple initialize");
@@ -219,20 +177,20 @@ public class MultipleSimulateAction extends NoInteractionSimulateAction {
         	inputCount = 1;
         }
         //System.out.println("In initialize:" + multiple);
-        InputTableModel model = null;
+        TestInputTableModel model = null;
         if(getObject() instanceof Automaton){
-        	model = InputTableModel.getModel((Automaton)getObject(), multiple);
+        	model = TestInputTableModel.getModel((Automaton)getObject(), multiple);
         }
-        else if(getObject() instanceof Grammar) model = InputTableModel.getModel((Grammar)getObject(), multiple);
+        else if(getObject() instanceof Grammar) model = TestInputTableModel.getModel((Grammar)getObject(), multiple);
 		JTableExtender table = new JTableExtender(model, this);
 		// In this regular multiple simulate pane, we don't care about
 		// the outputs, so get rid of them.
 		TableColumnModel tcmodel = table.getColumnModel();
-
-		inputCount += model.getInputCount();
-		for (int i = model.getInputCount(); i > 0; i--) {
-			tcmodel.removeColumn(tcmodel.getColumn(inputCount));
-		}
+//
+//		inputCount += model.getInputCount();
+//		for (int i = model.getInputCount(); i > 0; i--) {
+//			tcmodel.removeColumn(tcmodel.getColumn(inputCount));
+//		}
 		if(multiple){
             ArrayList<Object> autos  = this.getEnvironment().myObjects;
             //System.out.println("In initialize: " + autos.size());
@@ -304,13 +262,13 @@ public class MultipleSimulateAction extends NoInteractionSimulateAction {
 //            System.out.println("table null");
 //            table = newTable;
 //        }
-//        System.out.println((((InputTableModel)newTable.getModel()).isMultiple));
-//		if(((InputTableModel)table.getModel()).isMultiple != (((InputTableModel)newTable.getModel()).isMultiple)){
+//        System.out.println((((TestInputTableModel)newTable.getModel()).isMultiple));
+//		if(((TestInputTableModel)table.getModel()).isMultiple != (((TestInputTableModel)newTable.getModel()).isMultiple)){
 //            System.out.println("got here");
 //            table = newTable;
 //        }
         
-		if(((InputTableModel)table.getModel()).isMultiple){
+		if(((TestInputTableModel)table.getModel()).isMultiple){
 			getEnvironment().remove(getEnvironment().getActive());
 		}
 		
@@ -345,7 +303,7 @@ public class MultipleSimulateAction extends NoInteractionSimulateAction {
 				} catch (NullPointerException exception) {
 					// We weren't editing anything, so we're OK.
 				}
-				InputTableModel model = (InputTableModel) table.getModel();
+				TestInputTableModel model = (TestInputTableModel) table.getModel();
 				JFileChooser ourChooser=new JFileChooser (System.getProperties().getProperty("user.dir"));
 				int retval=ourChooser.showOpenDialog(null);
 				File f=null;
@@ -385,7 +343,7 @@ public class MultipleSimulateAction extends NoInteractionSimulateAction {
 			
 		});
 		// Add the running input thing.
-		bar.add(new AbstractAction("Run Inputs") {
+		bar.add(new AbstractAction("Run Testcases") {
 			/**
 			 * 
 			 */
@@ -398,7 +356,7 @@ public class MultipleSimulateAction extends NoInteractionSimulateAction {
 				} catch (NullPointerException exception) {
 					// We weren't editing anything, so we're OK.
 				}
-				InputTableModel model = (InputTableModel) table.getModel();
+				TestInputTableModel model = (TestInputTableModel) table.getModel();
 				
 				if(getObject() instanceof Automaton){
 	                Automaton currentAuto = (Automaton)getObject();
@@ -489,7 +447,7 @@ public class MultipleSimulateAction extends NoInteractionSimulateAction {
 			}
 			
 		});
-		if(!((InputTableModel)table.getModel()).isMultiple){
+		if(!((TestInputTableModel)table.getModel()).isMultiple){
 		// Add the clear button.
 		bar.add(new AbstractAction("Clear") {
 			/**
@@ -504,17 +462,12 @@ public class MultipleSimulateAction extends NoInteractionSimulateAction {
 				} catch (NullPointerException exception) {
 					// We weren't editing anything, so we're OK.
 				}
-				InputTableModel model = (InputTableModel) table.getModel();              
+				TestInputTableModel model = (TestInputTableModel) table.getModel();              
 				model.clear();
 			}
 		});
-		
-        /*
-         * So that it will show up as Lambda or Epsilon, depending on the
-         * profile. Sorry about the cheap hack. <-- ts was not the wind twin 🫩💔🥀
-         * 
-         * Jinghui Lim
-         */
+
+		addTestCases();
 
 		bar.add(new AbstractAction("Enter " + Universe.curProfile.getEmptyStringLabel()) {
 			/**
@@ -540,7 +493,7 @@ public class MultipleSimulateAction extends NoInteractionSimulateAction {
 
 			public void actionPerformed(ActionEvent e) {
 				int[] rows = table.getSelectedRows();
-				InputTableModel tm = (InputTableModel) table.getModel();
+				TestInputTableModel tm = (TestInputTableModel) table.getModel();
 				List<Integer> nonassociatedRows = new ArrayList<>();
 				for (int i = 0; i < rows.length; i++) {
 					if (rows[i] == tm.getRowCount() - 1)
@@ -583,7 +536,7 @@ public class MultipleSimulateAction extends NoInteractionSimulateAction {
 			}
 		});
 		}
-		if(((InputTableModel)table.getModel()).isMultiple){
+		if(((TestInputTableModel)table.getModel()).isMultiple){
 		    
 		    bar.add(new AbstractAction("Edit File"){
 		        /**
@@ -719,7 +672,7 @@ public class MultipleSimulateAction extends NoInteractionSimulateAction {
             			int begin = (row-beginOffset);
             			
             			for(int i = 0; i < (stringSize); i++){
-            				((InputTableModel)table.getModel()).deleteRow(begin);      				
+            				((TestInputTableModel)table.getModel()).deleteRow(begin);      				
             		 }  
             			table.changeSelection(0,0, false, false);
                     }
@@ -797,7 +750,7 @@ public class MultipleSimulateAction extends NoInteractionSimulateAction {
         	                    }
         	                }
                             if(filepath.equals("")) failedSave = true;
-        	                InputTableModel model = (InputTableModel)table.getModel();
+        	                TestInputTableModel model = (TestInputTableModel)table.getModel();
         	                String oldfileName = (String)model.getValueAt(0, 0);
         	                String fileName = (String)model.getValueAt(0, 0);
         	                boolean turing = false;
@@ -900,7 +853,7 @@ public class MultipleSimulateAction extends NoInteractionSimulateAction {
     		getEnvironment().setActive(mp);
         }
         else if(finObject instanceof Grammar){
-        	BruteParsePane bp = new BruteParsePane((GrammarEnvironment)getEnvironment(), (Grammar)finObject, (InputTableModel)table.getModel());
+        	BruteParsePane bp = new BruteParsePane((GrammarEnvironment)getEnvironment(), (Grammar)finObject, (TestInputTableModel)table.getModel());
         	bp.inputField.setEditable(false);
             if(getEnvironment().myTestStrings != null && getEnvironment().myTestStrings.size()>0) bp.inputField.setText((String)getEnvironment().myTestStrings.get(0));
         	JSplitPane split = SplitPaneFactory.createSplit(getEnvironment(), true,
@@ -915,21 +868,29 @@ public class MultipleSimulateAction extends NoInteractionSimulateAction {
 	}
 
 	private void addTestCases() {
+
 		ArrayList<TestCase> testCases = ((Automaton) this.getEnvironment().getObject()).tests;
-		InputTableModel model = (InputTableModel) table.getModel();
+		TestInputTableModel model = (TestInputTableModel) table.getModel();
+		try {
+			// Make sure any recent changes are registered.
+			table.getCellEditor().stopCellEditing();
+		} catch (NullPointerException exception) {
+			// We weren't editing anything, so we're OK.
+		}
+		model.clear();
 		int last=model.getRowCount()-1;
 
 		for (int i = 0; i < testCases.size(); ++i)
 		{
 			TestCase testCase = testCases.get(i);
 			model.setValueAt(testCase.input, last, 0);
-//			model.setValueAt(testCase.expected, last, 1);
+			model.setValueAt(testCase.expected, last, 1);
 			last++;
 		}
 	}
 
 	private int getMachineIndexBySelectedRow(JTable table){
-		InputTableModel model = (InputTableModel) table.getModel();
+		TestInputTableModel model = (TestInputTableModel) table.getModel();
         int row = table.getSelectedRow();
         if(row < 0) return -1;
         String machineFileName = (String)model.getValueAt(row, 0);
@@ -959,7 +920,7 @@ public class MultipleSimulateAction extends NoInteractionSimulateAction {
 	}
 	
 	public void viewAutomaton(JTableExtender table){
-		InputTableModel model = (InputTableModel) table.getModel();
+		TestInputTableModel model = (TestInputTableModel) table.getModel();
 		 if(model.isMultiple){        	 			
 	         int row = table.getSelectedRow();
 	         if(row < 0) return;
@@ -994,7 +955,7 @@ public class MultipleSimulateAction extends NoInteractionSimulateAction {
         Object current = null;
         if(machines != null) current = machines.get(0);
         else current = this.getEnvironment().getObject();
-            if(current instanceof Automaton && ((InputTableModel)table.getModel()).isMultiple){
+            if(current instanceof Automaton && ((TestInputTableModel)table.getModel()).isMultiple){
             	int spot = this.getMachineIndexBySelectedRow(table);
             	Automaton cur = null;
             	if(spot != -1) cur = (Automaton)machines.get(spot);

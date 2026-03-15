@@ -38,7 +38,11 @@
 	  */
 	 public AboutBox(Frame owner) {
 		 super(owner);
-		 
+
+		 /**
+		  * Bro this is ai slop 🤮
+		  */
+
 		 // Use a simple BorderLayout
 		 JPanel contentPanel = new JPanel(new BorderLayout(0, 10));
 		 contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -51,14 +55,9 @@
 		 JLabel imageLabel = new JLabel(icon);
 		 imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		 
-		 // Create a version label at the bottom
-		 JLabel versionLabel = new JLabel("JFLAP Version " + VERSION, SwingConstants.CENTER);
-		 versionLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
-		 
 		 // Add components to the panel
 		 contentPanel.add(imageLabel, BorderLayout.CENTER);
-		 contentPanel.add(versionLabel, BorderLayout.SOUTH);
-		 
+
 		 // Set a proper fixed size that fits the entire image and text
 		 int imageWidth = icon.getIconWidth();
 		 int imageHeight = icon.getIconHeight();
