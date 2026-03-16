@@ -1,6 +1,7 @@
 # JFLAP
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/Mc5VTF1sgYY?si=AkUYr5Lkw4cpnP_c" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+[<iframe width="560" height="315" src="https://www.youtube.com/embed/Mc5VTF1sgYY?si=AkUYr5Lkw4cpnP_c" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+](https://youtu.be/Mc5VTF1sgYY?si=OTMrWuQ-RxgxCXbW)
 
 ## How to build it
 Install Maven, then run this:
