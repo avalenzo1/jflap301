@@ -1,57 +1,57 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--Created with JFLAP 7.1.--><structure>
+<?xml version="1.0" encoding="UTF-8"?><!--Created with JFLAP 7.2.--><structure>
 	<type>fa</type>
 	<automaton>
 		<!--The list of states.-->
 		<state id="0" name="q0">
-			<x>638.0</x>
-			<y>499.0</y>
+			<x>93.0</x>
+			<y>222.0</y>
 			<initial/>
 		</state>
 		<state id="1" name="q1">
-			<x>639.0</x>
-			<y>346.0</y>
+			<x>94.0</x>
+			<y>69.0</y>
 			<final/>
 		</state>
 		<state id="2" name="q2">
-			<x>732.0</x>
-			<y>344.0</y>
+			<x>187.0</x>
+			<y>67.0</y>
 			<final/>
 		</state>
 		<state id="3" name="q3">
-			<x>820.0</x>
-			<y>344.0</y>
+			<x>275.0</x>
+			<y>67.0</y>
 			<final/>
 		</state>
 		<state id="4" name="q4">
-			<x>916.0</x>
-			<y>343.0</y>
+			<x>371.0</x>
+			<y>66.0</y>
 			<final/>
 		</state>
 		<!--The list of transitions.-->
 		<transition>
-			<from>1</from>
-			<to>2</to>
-			<read>a</read>
-		</transition>
-		<transition>
-			<from>3</from>
-			<to>4</to>
-			<read>b</read>
-		</transition>
-		<transition>
-			<from>3</from>
-			<to>4</to>
-			<read>a</read>
-		</transition>
-		<transition>
-			<from>1</from>
-			<to>2</to>
+			<from>4</from>
+			<to>0</to>
 			<read>b</read>
 		</transition>
 		<transition>
 			<from>0</from>
 			<to>1</to>
 			<read>b</read>
+		</transition>
+		<transition>
+			<from>1</from>
+			<to>2</to>
+			<read>b</read>
+		</transition>
+		<transition>
+			<from>1</from>
+			<to>2</to>
+			<read>a</read>
+		</transition>
+		<transition>
+			<from>4</from>
+			<to>0</to>
+			<read>a</read>
 		</transition>
 		<transition>
 			<from>0</from>
@@ -61,38 +61,42 @@
 		<transition>
 			<from>2</from>
 			<to>3</to>
+			<read>a</read>
+		</transition>
+		<transition>
+			<from>3</from>
+			<to>4</to>
 			<read>b</read>
 		</transition>
 		<transition>
 			<from>2</from>
 			<to>3</to>
-			<read>a</read>
-		</transition>
-		<transition>
-			<from>4</from>
-			<to>0</to>
 			<read>b</read>
 		</transition>
 		<transition>
-			<from>4</from>
-			<to>0</to>
+			<from>3</from>
+			<to>4</to>
 			<read>a</read>
 		</transition>
 		<testcase>
-		    <string>a</string>
-		    <expect>accept</expect>
+			<string>a</string>
+			<expected>Accept</expected>
 		</testcase>
-        <testcase>
-            <string>abba</string>
-            <expect>accept</expect>
-        </testcase>
-        <testcase>
-            <string>aaaaa</string>
-            <expect>reject</expect>
-        </testcase>
-        <testcase>
-            <string></string>
-            <expect>reject</expect>
-        </testcase>
+		<testcase>
+			<string>abba</string>
+			<expected>Accept</expected>
+		</testcase>
+		<testcase>
+			<string>aaaaa</string>
+			<expected>Reject</expected>
+		</testcase>
+		<testcase>
+			<string/>
+			<expected>Reject</expected>
+		</testcase>
+        <assert>
+            <alphabet>a, b</alphabet>
+            <type>dfa</type>
+        </assert>
 	</automaton>
 </structure>

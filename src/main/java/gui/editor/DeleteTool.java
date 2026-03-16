@@ -24,8 +24,10 @@ import gui.environment.AutomatonEnvironment;
 import gui.viewer.AutomatonDrawer;
 import gui.viewer.AutomatonPane;
 
+import java.awt.*;
 import java.awt.event.MouseEvent;
 
+import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.KeyStroke;
 
@@ -62,8 +64,15 @@ public class DeleteTool extends Tool {
 	 * @return the delete tool icon
 	 */
 	protected Icon getIcon() {
-		java.net.URL url = getClass().getResource("/ICON/delete.gif");
-		return new javax.swing.ImageIcon(url);
+		try {
+			Image img = ImageIO.read(getClass().getResource("/ICON/delete.png"));
+			Image resizedImage =
+					img.getScaledInstance(16, 16, 16);
+			return new javax.swing.ImageIcon(resizedImage);
+
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**

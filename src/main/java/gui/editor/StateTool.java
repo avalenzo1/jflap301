@@ -24,8 +24,11 @@ import gui.environment.AutomatonEnvironment;
 import gui.viewer.AutomatonDrawer;
 import gui.viewer.AutomatonPane;
 
+import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
@@ -59,8 +62,15 @@ public class StateTool extends Tool {
 	 * @return the state tool icon
 	 */
 	protected Icon getIcon() {
-		java.net.URL url = getClass().getResource("/ICON/state.gif");
-		return new ImageIcon(url);
+		try {
+			Image img = ImageIO.read(getClass().getResource("/ICON/state.png"));
+			Image resizedImage =
+					img.getScaledInstance(16, 16, 16);
+			return new javax.swing.ImageIcon(resizedImage);
+
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**

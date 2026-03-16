@@ -44,10 +44,10 @@
 		  */
 
 		 // Use a simple BorderLayout
-		 JPanel contentPanel = new JPanel(new BorderLayout(0, 10));
-		 contentPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		 JPanel contentPanel = new JPanel(new BorderLayout(0, 0));
+		 contentPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
 		 contentPanel.setBackground(Color.WHITE);
-		 
+
 		 // Load the image as an ImageIcon (handles resource loading properly)
 		 ImageIcon icon = new ImageIcon(getClass().getResource("/MEDIA/about.png"));
 		 
@@ -62,11 +62,7 @@
 		 int imageWidth = icon.getIconWidth();
 		 int imageHeight = icon.getIconHeight();
 		 
-		 // Ensure minimum dimensions plus some padding
-		 int width = Math.max(imageWidth + 20, 480);
-		 int height = Math.max(imageHeight + 60, 350);
-		 
-		 contentPanel.setPreferredSize(new Dimension(width, height));
+		 contentPanel.setPreferredSize(new Dimension(imageWidth, imageHeight));
 		 
 		 // Set the content pane
 		 setContentPane(contentPanel);

@@ -235,6 +235,14 @@ public class MultipleSimulateActionTests extends MultipleSimulateAction {
 						JOptionPane.ERROR_MESSAGE);
 				return;
 			}
+
+			//TODO:
+			/**
+			 * Add support for extra test cases
+			 *
+			 * - Check Automaton Alphabet
+			 * - Assert Automaton is a DFA or NFA
+			 */
 		}
         /*
          * If it is a Mealy or Moore machine, it cannot have nondeterminism.

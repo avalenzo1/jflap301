@@ -426,15 +426,15 @@ public abstract class AutomatonTransducer extends AbstractTransducer {
 	}
 
 	private void readTests(Node parent, Automaton root, Document document) {
-		NodeList nodeList = document.getElementsByTagName("testcase");
+		NodeList nodeList = document.getElementsByTagName(TESTCASE_NAME);
 
 		for (int i = 0; i < nodeList.getLength(); ++i)
 		{
 			try {
 				Element testCaseNode = (Element) nodeList.item(i);
 
-				String string = testCaseNode.getElementsByTagName("string").item(0).getTextContent();
-				String expected = testCaseNode.getElementsByTagName("expect").item(0).getTextContent();
+				String string = testCaseNode.getElementsByTagName(TESTCASE_INPUT_NAME).item(0).getTextContent();
+				String expected = testCaseNode.getElementsByTagName(TESTCASE_EXPECTED_OUTPUT_NAME).item(0).getTextContent();
 
 				System.out.println(string + expected);
 
@@ -779,7 +779,25 @@ public abstract class AutomatonTransducer extends AbstractTransducer {
 			se.appendChild(createNoteElement(doc, (Note)notes.get(k)));
 			
 		}
+
+		// Sike Add testcases to the very very end
+		ArrayList<TestCase> testCases = auto.tests;
+		for(int k = 0; k < testCases.size(); k++){
+			se.appendChild(createTestCaseElement(doc, (TestCase)testCases.get(k)));
+
+		}
+
 		return se;
+	}
+
+	private Node createTestCaseElement(Document doc, TestCase testCase) {
+		Element ne = createElement(doc, TESTCASE_NAME, null, null);
+		ne.appendChild(createElement(doc, TESTCASE_INPUT_NAME, null, ""
+				+ testCase.input));
+		ne.appendChild(createElement(doc, TESTCASE_EXPECTED_OUTPUT_NAME, null, ""
+				+ testCase.expected));
+
+		return ne;
 	}
 
 	private Node createNoteElement(Document doc, Note note) {
@@ -864,6 +882,9 @@ public abstract class AutomatonTransducer extends AbstractTransducer {
 	/** The tag name for the text of the note elements. */
 	public static final String NOTE_TEXT_NAME = "text";
 
+	public static final String TESTCASE_NAME = "testcase";
+	public static final String TESTCASE_INPUT_NAME = "string";
+	public static final String TESTCASE_EXPECTED_OUTPUT_NAME = "expected";
 	
 	/**The tag name for the block transition */
 	private static final String IS_BLOCK = "block";

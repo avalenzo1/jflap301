@@ -24,11 +24,10 @@ import gui.environment.AutomatonEnvironment;
 import gui.viewer.AutomatonDrawer;
 import gui.viewer.AutomatonPane;
 
-import java.awt.Graphics;
-import java.awt.Point;
-import java.awt.Stroke;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 
+import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.KeyStroke;
 
@@ -84,8 +83,15 @@ public class TransitionTool extends Tool {
 	 * @return the transition tool icon
 	 */
 	protected Icon getIcon() {
-		java.net.URL url = getClass().getResource("/ICON/transition.gif");
-		return new javax.swing.ImageIcon(url);
+		try {
+			Image img = ImageIO.read(getClass().getResource("/ICON/transition.png"));
+			Image resizedImage =
+					img.getScaledInstance(16, 16, 16);
+			return new javax.swing.ImageIcon(resizedImage);
+
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**
